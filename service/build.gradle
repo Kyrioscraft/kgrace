@@ -1,0 +1,7 @@
+project(':service'){
+
+}
+
+dependencies{
+    compile project(':data-model')
+}

@@ -1,0 +1,26 @@
+project(':web-server'){
+
+    apply plugin : 'war'
+    dependencies{
+        compile project(':service')
+
+
+    }
+    /*自定义任务用于将当前子项目的java类打成jar包,此jar包不包含resources下的文件*/
+    def jarArchiveName="${project.name}-${version}.jar"
+    task jarWithoutResources(type: Jar) {
+        from sourceSets.main.output.classesDir
+        archiveName jarArchiveName
+    }
+    /*从子项目拷贝War任务生成的压缩包到根项目的build/explodedDist目录*/
+    task explodedDist(type: Copy) {
+        into "$buildDir/out"
+        subprojects {
+            from tasks.withType(War)
+        }
+    }
+    war {
+        baseName = "grace"
+    }
+}
+
