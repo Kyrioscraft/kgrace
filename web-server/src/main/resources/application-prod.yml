@@ -1,28 +1,29 @@
-#生产环境的配置
-#用户会话过期时间，单位秒
-#Tomcat编码,默认就是UTF-8
+#开发环境的配置
 #server.port=8443
 server:
-  port: 8080
-  session:
-    timeout: 60
-  tomcat:
-    uri-encoding: UTF-8
+  port: 9090
+#  context-path: /
 # SSL协议相关配置
 #server.ssl.key-store= .keystore
 #server.ssl.key-password= 123321
 #server.ssl.key-store-type= JKS
 #server.ssl.key-alias= tomcat
+#日志配置
+logging:
+    level:
+        root: INFO
+        tk: DEBUG
 
 spring:
     application:
         name: prod
+    #数据源配置
     datasource:
         driverClassName: com.mysql.jdbc.Driver
-        url: jdbc:mysql://rdsjsc997jy379s53w68o.mysql.rds.aliyuncs.com:3306/znblog?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
-        username: qiuxm
-        password: 123321qq
-        type: com.alibaba.druid.pool.DruidDataSourceC3P0Adapter
+        url: jdbc:mysql://localhost:3306/test?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
+        username: root
+        password: root
+        type: com.alibaba.druid.pool.DruidDataSource
         filters: stat
         maxActive: 20
         initialSize: 1
@@ -36,20 +37,48 @@ spring:
         testOnReturn: false
         poolPreparedStatements: true
         maxOpenPreparedStatements: 20
+#    jpa:
+#        database: mysql
+#        show-sql: true
+#        hibernate:
+#        ddl-auto: update
+#        naming:
+#            strategy: org.hibernate.cfg.DefaultComponentSafeNamingStrategy
+    thymeleaf:
+        cache: false
+    http:
+        encodeing:
+            force: true
+            charset: UTF-8
+            enabled: true
+
+      #    jackson:
+      #      serialization: true
+#prefix 默认是在classpath:/templates/下
+#      prefix: classpath:/static/
 
 #jms相关配置
-activemq:
-    broker-url: spring.activemq.broker-url=tcp://120.26.231.72:61616
+#activemq:
+#    broker-url: spring.activemq.broker-url=tcp://192.168.10.55:61616
 
 #mybatis配置
 mybatis:
-    mapperLocations: classpath:mapping/*.xml
+    type-aliases-package: cn.kyrioscraft.data.model
+    mapper-locations: classpath*:cn/kyrioscraft/data/repository/mybatis/*Mapper.xml
 
+
+mapper:
+    mappers: cn.kyrioscraft.data.config.BaseMapper
+    not-empty: false
+    identity: MYSQL
+
+pagehelper:
+        helperDialect: mysql
+        reasonable: true
+        supportMethodsArguments: true
+        params: count=countSql
 #业务参数属性配置
-#book:
-#  author: 菡萏如佳人
-#  name: 程序与诗
-#
-#author:
-#  name: 临江仙
-#  age:  32
+
+ueditor:
+  config: {"imageActionName":"uploadimage","imageFieldName":"upfile","imageMaxSize":2048000,"imageAllowFiles":[".png",".jpg",".jpeg",".gif",".bmp"],"imageCompressEnable":true,"imageCompressBorder":1600,"imageInsertAlign":"none","imageUrlPrefix":"","imagePathFormat":"/ueditor/jsp/upload/image/{yyyy}{mm}{dd}/{time}{rand:6}","scrawlActionName":"uploadscrawl","scrawlFieldName":"upfile","scrawlPathFormat":"/ueditor/jsp/upload/image/{yyyy}{mm}{dd}/{time}{rand:6}","scrawlMaxSize":2048000,"scrawlUrlPrefix":"","scrawlInsertAlign":"none","snapscreenActionName":"uploadimage","snapscreenPathFormat":"/ueditor/jsp/upload/image/{yyyy}{mm}{dd}/{time}{rand:6}","snapscreenUrlPrefix":"","snapscreenInsertAlign":"none","catcherLocalDomain":["127.0.0.1","localhost","img.baidu.com"],"catcherActionName":"catchimage","catcherFieldName":"source","catcherPathFormat":"/ueditor/jsp/upload/image/{yyyy}{mm}{dd}/{time}{rand:6}","catcherUrlPrefix":"","catcherMaxSize":2048000,"catcherAllowFiles":[".png",".jpg",".jpeg",".gif",".bmp"],"videoActionName":"uploadvideo","videoFieldName":"upfile","videoPathFormat":"/ueditor/jsp/upload/video/{yyyy}{mm}{dd}/{time}{rand:6}","videoUrlPrefix":"","videoMaxSize":102400000,"videoAllowFiles":[".flv",".swf",".mkv",".avi",".rm",".rmvb",".mpeg",".mpg",".ogg",".ogv",".mov",".wmv",".mp4",".webm",".mp3",".wav",".mid"],"fileActionName":"uploadfile","fileFieldName":"upfile","filePathFormat":"/ueditor/jsp/upload/file/{yyyy}{mm}{dd}/{time}{rand:6}","fileUrlPrefix":"","fileMaxSize":51200000,"fileAllowFiles":[".png",".jpg",".jpeg",".gif",".bmp",".flv",".swf",".mkv",".avi",".rm",".rmvb",".mpeg",".mpg",".ogg",".ogv",".mov",".wmv",".mp4",".webm",".mp3",".wav",".mid",".rar",".zip",".tar",".gz",".7z",".bz2",".cab",".iso",".doc",".docx",".xls",".xlsx",".ppt",".pptx",".pdf",".txt",".md",".xml"],"imageManagerActionName":"listimage","imageManagerListPath":"/ueditor/jsp/upload/image/","imageManagerListSize":20,"imageManagerUrlPrefix":"","imageManagerInsertAlign":"none","imageManagerAllowFiles":[".png",".jpg",".jpeg",".gif",".bmp"],"fileManagerActionName":"listfile","fileManagerListPath":"/ueditor/jsp/upload/file/","fileManagerUrlPrefix":"","fileManagerListSize":20,"fileManagerAllowFiles":[".png",".jpg",".jpeg",".gif",".bmp",".flv",".swf",".mkv",".avi",".rm",".rmvb",".mpeg",".mpg",".ogg",".ogv",".mov",".wmv",".mp4",".webm",".mp3",".wav",".mid",".rar",".zip",".tar",".gz",".7z",".bz2",".cab",".iso",".doc",".docx",".xls",".xlsx",".ppt",".pptx",".pdf",".txt",".md",".xml"]}
+  read-url: http://jtbao.oss-cn-shanghai.aliyuncs.com
