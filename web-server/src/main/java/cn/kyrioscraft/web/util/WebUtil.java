@@ -3,6 +3,9 @@ package cn.kyrioscraft.web.util;
 
 
 import cn.kyrioscraft.data.model.entity.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -148,4 +151,60 @@ public class WebUtil {
         return basePath;
     }
 
+    //获取request请求的ip
+    public static String getIpAddress(HttpServletRequest request){
+        String ip = request.getHeader("x-forwarded-for");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
+    }
+
+    /**
+     *
+     * UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
+     * 但我在实际运用中发现获得的Authentication为null。仔细看了下源代码发现，如果想用上面的代码获得当前用户，必须在spring
+     * security过滤器执行中执行，否则在过滤链执行完时org.springframework.security.web.context.SecurityContextPersistenceFilter类会
+     * 调用SecurityContextHolder.clearContext();而把SecurityContextHolder清空，所以会得到null。    经过spring security认证后，
+     * security会把一个SecurityContextImpl对象存储到session中，此对象中有当前用户的各种资料
+     *
+     */
+    public static org.springframework.security.core.userdetails.User getCurrentUser(HttpServletRequest request){
+        SecurityContextImpl ssctx = (SecurityContextImpl) request.getSession().getAttribute("SPRING_SECURITY_CONTEXT");
+        if(ssctx==null)
+            return null;
+        Authentication authentication = ssctx.getAuthentication();
+        org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+        return principal;
+    }
+    public static String getCurrentUserLoginIP(HttpServletRequest request){
+        SecurityContextImpl ssctx = (SecurityContextImpl) request.getSession().getAttribute("SPRING_SECURITY_CONTEXT");
+        if(ssctx==null)
+            return null;
+        Authentication authentication = ssctx.getAuthentication();
+        WebAuthenticationDetails details = (WebAuthenticationDetails) authentication.getDetails();
+        String remoteAddress = details.getRemoteAddress();
+        return remoteAddress;
+    }
+    public static String getCurrentSessionId(HttpServletRequest request){
+        SecurityContextImpl ssctx = (SecurityContextImpl) request.getSession().getAttribute("SPRING_SECURITY_CONTEXT");
+        if(ssctx==null)
+            return null;
+        Authentication authentication = ssctx.getAuthentication();
+        WebAuthenticationDetails details = (WebAuthenticationDetails) authentication.getDetails();
+        String sessionId = details.getSessionId();
+        return sessionId;
+    }
 }
